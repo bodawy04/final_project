@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutteraya/model/my_cache.dart';
 import 'package:flutteraya/view/screens/profile_screens/change_password.dart';
 import 'package:flutteraya/view/screens/profile_screens/email_edit.dart';
 import 'package:flutteraya/view/screens/profile_screens/phone_number.dart';
@@ -22,8 +23,8 @@ class _LoginandSecurityState extends State<LoginandSecurity> {
     "Face ID"
   ];
   List<String> _loginTitlesData = [
-    "rafifdian12@gmail.com",
-    "",
+    MyCache.getString(key: "email"),
+    MyCache.getString(key: "mobile"),
     "",
     "Non active",
     ""

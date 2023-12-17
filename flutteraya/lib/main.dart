@@ -13,13 +13,13 @@ import 'package:flutteraya/view/screens/create_account_screen/create_account.dar
 import 'package:flutteraya/view/screens/create_account_screen/interests_screen.dart';
 import 'package:flutteraya/view/screens/create_account_screen/location_screen.dart';
 import 'package:flutteraya/view/screens/home_screens/applied_jobs.dart';
+import 'package:flutteraya/view/screens/home_screens/home.dart';
 import 'package:flutteraya/view/screens/home_screens/home_search_screen.dart';
 import 'package:flutteraya/view/screens/home_screens/main_page.dart';
 import 'package:flutteraya/view/screens/home_screens/notifications_screen.dart';
 import 'package:flutteraya/view/screens/home_screens/saved_screen.dart';
 import 'package:flutteraya/view/screens/apply_job_screens/upload_portfolio.dart';
 import 'package:flutteraya/view/screens/login_screens/login.dart';
-import 'package:flutteraya/view/screens/profile_screens/complete_profile.dart';
 import 'package:flutteraya/view/screens/profile_screens/edit_profile_screen.dart';
 import 'package:flutteraya/view/screens/profile_screens/language_screen.dart';
 import 'package:flutteraya/view/screens/profile_screens/profile.dart';

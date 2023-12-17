@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:enhance_stepper/enhance_stepper.dart';
 import 'package:flutter/material.dart';
@@ -7,20 +8,21 @@ import 'package:horizontal_stepper_flutter/horizontal_stepper_flutter.dart';
 import 'package:im_stepper/stepper.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
-class BiodataScreen extends StatefulWidget {
-  const BiodataScreen({super.key});
+import '../../../model/my_cache.dart';
+import '../../../model/profile_model.dart';
 
-  @override
-  State<BiodataScreen> createState() => _BiodataScreenState();
-}
+class BiodataScreen extends StatelessWidget {
 
-class _BiodataScreenState extends State<BiodataScreen> {
   int activeStep = 0;
   List<String> _stepperTitle = [
     'Biodata',
     "Type of work",
     "Upload portfolio",
   ];
+
+  var name = TextEditingController(text:MyCache.getString(key: "name"));
+  var email = TextEditingController(text:MyCache.getString(key: "email"));
+  var phoneContr = TextEditingController(text:MyCache.getString(key: "mobile"));
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +61,13 @@ class _BiodataScreenState extends State<BiodataScreen> {
               height: 5.h,
             ),
             TextField(
+              controller: name,
+              onSubmitted: (v){
+                MyCache.setString(key: "name", value: v);
+                print(v);
+              },
               decoration: InputDecoration(
-                  hintText: "Rafif Dian Axelingga",
+                  // hintText: "Rafif Dian Axelingga",
                   hintStyle: TextStyle(color: Colors.black, fontSize: 13.sp),
                   prefixIcon: Icon(Icons.person),
                   prefixIconColor: Color(0xffD1D5DB),
@@ -88,10 +95,15 @@ class _BiodataScreenState extends State<BiodataScreen> {
               height: 5.h,
             ),
             TextField(
+              controller: email,
+              onSubmitted: (val){
+                MyCache.setString(key: "email", value: val);
+                print(val);
+              },
               decoration: InputDecoration(
-                  hintText: "rafifdian12@gmail.com",
+                  // hintText: MyCache.getString(key: "email"),
                   hintStyle: TextStyle(color: Colors.black, fontSize: 13.sp),
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: Icon(Icons.mail),
                   prefixIconColor: Color(0xffD1D5DB),
                   iconColor: Colors.black,
                   focusedBorder: OutlineInputBorder(
@@ -117,6 +129,11 @@ class _BiodataScreenState extends State<BiodataScreen> {
               height: 5.h,
             ),
             IntlPhoneField(
+              controller: phoneContr,
+              onSubmitted: (m){
+                MyCache.setString(key: "phone", value: m);
+                print(m);
+              },
               decoration: InputDecoration(
                 counterText: "",
                 counter: null,
@@ -136,7 +153,7 @@ class _BiodataScreenState extends State<BiodataScreen> {
               dropdownIconPosition: IconPosition.trailing,
             ),
             SizedBox(
-              height: 15.h,
+              height: 60.h,
             ),
           ]);
   }

@@ -1,9 +1,15 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutteraya/model/my_cache.dart';
 import 'package:flutteraya/view/screens/home_screens/main_page.dart';
+import 'package:flutteraya/view/screens/profile_screens/profile.dart';
 import 'package:flutteraya/view/widgets/customed_floating_button.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../model/profile_model.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -13,6 +19,44 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  File? _selectedImage;
+  String? _imagePath;
+
+  // final imagePicker=ImagePicker();
+
+  var name = TextEditingController(text:MyCache.getString(key: "name"));
+  var bio = TextEditingController(text:MyCache.getString(key: "bio"));
+  var address = TextEditingController(text:MyCache.getString(key: "address"));
+  var phoneContr = TextEditingController(text:MyCache.getString(key: "mobile"));
+
+  saveData(String n, String b,String a,String m) async {
+    Dio dio = Dio();
+    try {
+      Response resp = await dio.put(
+        "https://project2.amit-learning.com/api/user/profile/edit",
+        data: {"name": n, "bio": b,"address":a,"mobile":m,"image":_imagePath??MyCache.getString(key: "image")},
+          options: Options(headers: {
+            "Authorization": "Bearer ${MyCache.getString(key: "token")}",
+          })
+      );
+      if (resp.statusCode == 200) {
+        Profile p1 = Profile.fromJson(resp.data);
+        MyCache.setString(key: "name", value: n);
+        MyCache.setString(key: "bio", value: b);
+        MyCache.setString(key: "address", value: a);
+        MyCache.setString(key: "mobile", value: m);
+        MyCache.setString(key: "image", value: _imagePath!);
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => MainScreen()));
+        } else {
+        }
+    } on DioException catch(e) {
+      // Handle exceptions here
+      print("An error occurred: ${e.response!.statusCode}");
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +78,9 @@ class _EditProfileState extends State<EditProfile> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50)),
                 padding: EdgeInsets.symmetric(vertical: 12.h)),
-            onPressed: () {},
+            onPressed: () {
+              saveData(name.text, bio.text, address.text,phoneContr.text);
+            },
             child: Text("Save"),
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -48,7 +94,7 @@ class _EditProfileState extends State<EditProfile> {
             ),
             Center(
                 child: CircleAvatar(
-              backgroundImage: AssetImage("images/onboarding1.png"),
+              backgroundImage: _selectedImage==null?FileImage(File(MyCache.getString(key: "image"))):FileImage(_selectedImage!),
               radius: 50.sp,
               child: Container(
                   decoration: BoxDecoration(
@@ -69,7 +115,7 @@ class _EditProfileState extends State<EditProfile> {
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w600),
               ),
-              onTap: () {},
+              onTap: () {_pickImage();},
             ),
             SizedBox(
               height: 20.h,
@@ -86,8 +132,11 @@ class _EditProfileState extends State<EditProfile> {
                   SizedBox(
                     height: 5.h,
                   ),
-                  TextField(
+                  TextFormField(
+                    controller: name,
+                    // initialValue: MyCache.getString(key: "name"),
                     decoration: InputDecoration(
+                      // hintText:"Username" ,
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(width: 2, color: Colors.blue),
                           borderRadius: BorderRadius.circular(10)),
@@ -107,7 +156,9 @@ class _EditProfileState extends State<EditProfile> {
                   SizedBox(
                     height: 5.h,
                   ),
-                  TextField(
+                  TextFormField(
+                    controller: bio,
+                    // initialValue: MyCache.getString(key: "bio"),
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(width: 2, color: Colors.blue),
@@ -128,7 +179,9 @@ class _EditProfileState extends State<EditProfile> {
                   SizedBox(
                     height: 5.h,
                   ),
-                  TextField(
+                  TextFormField(
+                    controller: address,
+                    // initialValue: MyCache.getString(key: "address"),
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(width: 2, color: Colors.blue),
@@ -150,6 +203,7 @@ class _EditProfileState extends State<EditProfile> {
                     height: 5.h,
                   ),
                   IntlPhoneField(
+                    controller: phoneContr,
                     decoration: InputDecoration(
                       counterText: "",
                       hintText: 'Phone Number',
@@ -175,4 +229,12 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
+  Future _pickImage()async{
+    final returnedImage=await ImagePicker().pickImage(source: ImageSource.gallery);
+    _imagePath=returnedImage!.path;
+    setState(() {
+      _selectedImage=File(returnedImage!.path);
+    });
+  }
+
 }

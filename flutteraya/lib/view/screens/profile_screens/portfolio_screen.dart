@@ -1,16 +1,54 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutteraya/view/screens/profile_screens/profile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class PortfolioScreen extends StatefulWidget {
-  const PortfolioScreen({super.key});
+import '../../../model/my_cache.dart';
+import '../../../model/profile_model.dart';
 
-  @override
-  State<PortfolioScreen> createState() => _PortfolioScreenState();
-}
+class PortfolioScreen extends StatelessWidget {
 
-class _PortfolioScreenState extends State<PortfolioScreen> {
+  Future uploadPDF()async{
+    FilePickerResult? result=await FilePicker.platform.pickFiles();
+      String filename="";
+      String path="";
+    if(result!=null){
+      File file=File(result.files.single.path??" ");
+      filename=file.path.split('/').last;
+      path=file.path;
+      print("filename========== $filename");
+      print("path========== $path");
+    }
+    Dio dio = Dio();
+    try {
+      dynamic resp = await dio.post(
+        "https://project2.amit-learning.com/api/user/profile/portofolios",
+        options: Options(headers: {
+          "Authorization": "Bearer ${MyCache.getString(key: "token")}",
+        }),
+        data: {"cv_file": filename},
+      );
+        print("response = ========= ${resp}");
+      if (resp.statusCode == 200) {
+        Profile p1 = Profile.fromJson(resp.data);
+        MyCache.setString(key: "cv_file", value: filename);
+        // Navigator.of(context).pushReplacement(
+        //     MaterialPageRoute(builder: (context) => ProfileScreen()));
+      } else {
+        print("Server returned status code: ${resp.statusCode}");
+        print("Error: ${resp.data}");
+      }
+    } catch (e) {
+      // Handle exceptions here
+      print("An error occurred: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +129,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(50),
                                     side: BorderSide(color: Colors.blue))),
-                            onPressed: () {},
+                            onPressed: () {
+                              uploadPDF();
+                            },
                             icon: FaIcon(
                               FontAwesomeIcons.arrowUpFromBracket,
                               size: 16.sp,
@@ -159,4 +199,5 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
       ),
     );
   }
+
 }

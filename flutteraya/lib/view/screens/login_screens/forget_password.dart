@@ -1,8 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutteraya/view/widgets/customed_textformfield.dart';
 import 'package:flutteraya/view/widgets/logo.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../../../model/my_cache.dart';
+import '../../../model/profile_model.dart';
+import '../home_screens/main_page.dart';
 
 class ForgetPass extends StatefulWidget {
   const ForgetPass({super.key});
@@ -12,13 +17,14 @@ class ForgetPass extends StatefulWidget {
 }
 
 class _ForgetPassState extends State<ForgetPass> {
-  //ToDo : khalaso
-
   bool _requested = false;
   bool _verified = false;
   bool _showAppBar = true;
   bool _reset = false;
   bool _obs = true;
+
+  var email = TextEditingController();
+  var password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +79,25 @@ class _ForgetPassState extends State<ForgetPass> {
                             SizedBox(
                               height: 30.h,
                             ),
-                            CustomedTextField(
-                                "Enter your email", FontAwesomeIcons.envelope)
+                            TextField(
+                              controller: email,
+                              decoration: InputDecoration(
+                                hintText: "Enter your email",
+                                prefixIcon: Icon(
+                                  Icons.mail_outline_rounded,
+                                  color: Color(0xffD1D5DB),
+                                ),
+                                iconColor: Colors.black,
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 2, color: Color(0xffD1D5DB)),
+                                    borderRadius: BorderRadius.circular(10)),
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 2, color: Color(0xffD1D5DB)),
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -118,11 +141,35 @@ class _ForgetPassState extends State<ForgetPass> {
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(100))),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       setState(() {
                                         _requested = true;
                                         _showAppBar = false;
                                       });
+                                      Dio dio = Dio();
+                                      try {
+                                        dynamic resp = await dio.post(
+                                          "https://project2.amit-learning.com/api/auth/user/update",
+                                          data: {"email": email.text},
+                                        );
+                                        if (resp.statusCode == 200) {
+                                          Profile p1 =
+                                              Profile.fromJson(resp.data);
+                                          MyCache.setString(
+                                              key: "token", value: p1.token!);
+                                          MyCache.setString(
+                                              key: "userID",
+                                              value: p1.user!.id!.toString());
+                                          MyCache.setString(
+                                              key: "name",
+                                              value: p1.user!.name!);
+                                        } else {
+                                          print("Error: ${resp.data}");
+                                        }
+                                      } catch (e) {
+                                        // Handle exceptions here
+                                        print("An error occurred: $e");
+                                      }
                                     },
                                     child: Text(
                                       "Request password reset",
@@ -234,10 +281,46 @@ class _ForgetPassState extends State<ForgetPass> {
                                     SizedBox(
                                       height: 30.h,
                                     ),
-                                    CustomedTextField(
-                                      "Password",
-                                      FontAwesomeIcons.lock,
-                                      obs: true,
+                                    TextField(
+                                      controller: password,
+                                      obscureText: _obs!,
+                                      obscuringCharacter: '●',
+                                      decoration: InputDecoration(
+                                        hintText: "Enter your new password",
+                                        prefixIcon: Icon(
+                                          Icons.lock_outlined,
+                                          color: Color(0xffD1D5DB),
+                                        ),
+                                        suffixIcon: _obs
+                                            ? IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _obs = !(_obs!);
+                                                    _obs
+                                                        ? FontAwesomeIcons.eye
+                                                        : FontAwesomeIcons
+                                                            .eyeSlash;
+                                                  });
+                                                },
+                                                icon:
+                                                    Icon(FontAwesomeIcons.eye),
+                                              )
+                                            : null,
+                                        suffixIconColor: Color(0xffD1D5DB),
+                                        iconColor: Colors.black,
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 2,
+                                                color: Color(0xffD1D5DB)),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 2,
+                                                color: Color(0xffD1D5DB)),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                      ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(
@@ -250,10 +333,45 @@ class _ForgetPassState extends State<ForgetPass> {
                                             fontSize: 14.sp),
                                       ),
                                     ),
-                                    CustomedTextField(
-                                      "Confirm password",
-                                      FontAwesomeIcons.lock,
-                                      obs: true,
+                                    TextField(
+                                      obscureText: _obs!,
+                                      obscuringCharacter: '●',
+                                      decoration: InputDecoration(
+                                        hintText: "Confirm password",
+                                        prefixIcon: Icon(
+                                          Icons.lock_outlined,
+                                          color: Color(0xffD1D5DB),
+                                        ),
+                                        suffixIcon: _obs
+                                            ? IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _obs = !(_obs!);
+                                                    _obs
+                                                        ? FontAwesomeIcons.eye
+                                                        : FontAwesomeIcons
+                                                            .eyeSlash;
+                                                  });
+                                                },
+                                                icon:
+                                                    Icon(FontAwesomeIcons.eye),
+                                              )
+                                            : null,
+                                        suffixIconColor: Color(0xffD1D5DB),
+                                        iconColor: Colors.black,
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 2,
+                                                color: Color(0xffD1D5DB)),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 2,
+                                                color: Color(0xffD1D5DB)),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                      ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(
@@ -295,10 +413,34 @@ class _ForgetPassState extends State<ForgetPass> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             100))),
-                                            onPressed: () {
+                                            onPressed: () async {
                                               setState(() {
                                                 _reset = true;
                                               });
+                                              Dio dio = Dio();
+                                              try {
+                                                dynamic resp = await dio.post(
+                                                  "https://project2.amit-learning.com/api/auth/user/update",
+                                                  options: Options(headers: {
+                                                    "Authorization": "Bearer ${MyCache.getString(key: "token")}"
+                                                  }),
+                                                  data: {
+                                                    "password": password.text
+                                                  },
+                                                );
+                                                if (resp.statusCode == 200) {
+                                                  Navigator.of(context)
+                                                      .pushReplacement(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  MainScreen()));
+                                                } else {
+                                                  print("Error: ${resp.data}");
+                                                }
+                                              } catch (e) {
+                                                // Handle exceptions here
+                                                print("An error occurred: $e");
+                                              }
                                             },
                                             child: Text(
                                               "Open email app",
@@ -363,7 +505,12 @@ class _ForgetPassState extends State<ForgetPass> {
                                                 borderRadius:
                                                     BorderRadius.circular(
                                                         100))),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          Navigator.of(context).pushReplacement(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MainScreen()));
+                                        },
                                         child: Text(
                                           "Open email app",
                                           style: TextStyle(

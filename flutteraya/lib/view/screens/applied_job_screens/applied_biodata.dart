@@ -1,21 +1,22 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
-class AppliedBiodata extends StatefulWidget {
-  const AppliedBiodata({Key? key}) : super(key: key);
+import '../../../model/my_cache.dart';
+import '../../../model/profile_model.dart';
 
-  @override
-  State<AppliedBiodata> createState() => _AppliedBiodataState();
-}
-
-class _AppliedBiodataState extends State<AppliedBiodata> {
+class AppliedBiodata extends StatelessWidget {
   int activeStep = 0;
   List<String> _stepperTitle = [
     'Biodata',
     "Type of work",
     "Upload portfolio",
   ];
+
+  var name = TextEditingController(text:MyCache.getString(key: "name"));
+  var email = TextEditingController(text:MyCache.getString(key: "email"));
+  var phoneContr = TextEditingController(text:MyCache.getString(key: "mobile"));
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +55,11 @@ class _AppliedBiodataState extends State<AppliedBiodata> {
             height: 5.h,
           ),
           TextField(
+            controller: name,
+            onSubmitted: (String v){
+              MyCache.setString(key: "applied_name", value: v);
+            },
             decoration: InputDecoration(
-                hintText: "Rafif Dian Axelingga",
                 hintStyle: TextStyle(color: Colors.black, fontSize: 13.sp),
                 prefixIcon: Icon(Icons.person),
                 prefixIconColor: Color(0xffD1D5DB),
@@ -83,10 +87,13 @@ class _AppliedBiodataState extends State<AppliedBiodata> {
             height: 5.h,
           ),
           TextField(
+            controller: email,
+            onSubmitted: (String v){
+              MyCache.setString(key: "applied_email", value: v);
+            },
             decoration: InputDecoration(
-                hintText: "rafifdian12@gmail.com",
                 hintStyle: TextStyle(color: Colors.black, fontSize: 13.sp),
-                prefixIcon: Icon(Icons.person),
+                prefixIcon: Icon(Icons.mail_outline_rounded),
                 prefixIconColor: Color(0xffD1D5DB),
                 iconColor: Colors.black,
                 focusedBorder: OutlineInputBorder(
@@ -112,6 +119,10 @@ class _AppliedBiodataState extends State<AppliedBiodata> {
             height: 5.h,
           ),
           IntlPhoneField(
+            controller: phoneContr,
+            onSubmitted: (String v){
+              MyCache.setString(key: "applied_phone", value: v);
+            },
             decoration: InputDecoration(
               counterText: "",
               counter: null,

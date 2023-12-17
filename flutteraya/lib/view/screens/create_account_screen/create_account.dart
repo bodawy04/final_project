@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutteraya/model/my_cache.dart';
 import 'package:flutteraya/view/screens/create_account_screen/interests_screen.dart';
 import 'package:flutteraya/view/screens/login_screens/login.dart';
 import 'package:flutteraya/view/widgets/customed_textformfield.dart';
@@ -24,59 +25,35 @@ class _CreateAccountState extends State<CreateAccount> {
 
   var email = TextEditingController();
   var name = TextEditingController();
-  var pass = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
-  // Register(String email,String n, String p) async {
-  //   Dio dio = Dio();
-  //   try {
-  //     dynamic resp = await dio.post(
-  //       "https://project2.amit-learning.com/api/auth/register",
-  //       data: {"email": email, "name":n,"password": p},
-  //     );
-  //     if (resp.statusCode == 200) {
-  //       Profile p = Profile.fromJson(resp.data);
-  //       print("Success");
-  //       print(p.token!);
-  //       print(p.user!.name);
-  //       print(p.user!.id);
-  //       print(p.user!.email);
-  //     } else {
-  //       print("Server returned status code: ${resp.statusCode}");
-  //       print("Error: ${resp.data}");
-  //     }
-  //   } catch (e) {
-  //     // Handle exceptions here
-  //     print("An error occurred: $e");
-  //   }
-  // }
 
   Register(String n,String em, String p) async {
     Dio dio = Dio();
     try {
-      dynamic resp = await dio.post(
+      Response resp = await dio.post(
         "https://project2.amit-learning.com/api/auth/register",
         data: {"name": n, "email": em , "password": p},
       );
       if (resp.statusCode == 200) {
         Profile profile = Profile.fromJson(resp.data);
-        print("Success");
-        print(profile.token!);
-        print(profile.user!.name);
-        print(profile.user!.id);
-        print(profile.user!.email);
+        MyCache.setString(key: "token", value: profile.token!);
+        MyCache.setString(key: "name", value: n);
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: (context) => Interests()));
       } else {
         print("Server returned status code: ${resp.statusCode}");
         print("Error: ${resp.data}");
       }
-    } catch (e) {
+    } on DioException catch (e) {
       // Handle exceptions here
-      print("An error occurred: $e");
+      print("An error occurred: ${e.response!.data}");
     }
   }
 
   GlobalKey<FormState> _formkey = new GlobalKey<FormState>();
 
-  TextEditingController _passwordController = TextEditingController();
 
   void _updateBorderColor(Color color) {
     setState(() {
@@ -284,10 +261,8 @@ class _CreateAccountState extends State<CreateAccount> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(100))),
                           onPressed: () {
-                            Register(name.text,email.text, pass.text);
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => Interests()));
+                            Register(name.text,email.text, _passwordController.text);
+
                           },
                           child: Text("Create account"),
                         )),

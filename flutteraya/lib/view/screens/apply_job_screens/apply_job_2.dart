@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +7,9 @@ import 'package:flutteraya/view/screens/apply_job_screens/type_of_work.dart';
 import 'package:flutteraya/view/screens/apply_job_screens/upload_portfolio.dart';
 import 'package:flutteraya/view/screens/apply_job_screens/upload_portfolio_2.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../../../model/my_cache.dart';
+import '../home_screens/main_page.dart';
 
 class ApplyJob1 extends StatefulWidget {
   const ApplyJob1({super.key});
@@ -56,7 +60,7 @@ class _ApplyJob1State extends State<ApplyJob1> {
                 activeStep++;
               });
             },
-            child: Text("Next"),
+            child: activeStep == 2 ?Text("Submit"):Text("Next"),
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: ListView(

@@ -33,20 +33,18 @@ class _LoginState extends State<Login> {
         "https://project2.amit-learning.com/api/auth/login",
         data: {"email": n, "password": p},
       );
-
+      print(resp.data!);
       if (resp.statusCode == 200) {
         Profile p1 = Profile.fromJson(resp.data);
         MyCache.setString(key: "token", value: p1.token!);
+        MyCache.setString(key: "email", value: n);
+        MyCache.setString(key: "userID", value: p1.user!.id!.toString());
         MyCache.setString(key: "name", value: p1.user!.name!);
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => MainScreen()));
-        // print("Success");
-        // print(p1.token!);
-        // print(p1.user!.name);
-        // print(p1.user!.id);
-      } else {
-        // print("Server returned status code: ${resp.statusCode}");
-        // print("Error: ${resp.data}");
+        } else {
+        print("Server returned status code: ${resp.statusCode}");
+        print("Error: ${resp.data}");
       }
     } catch (e) {
       // Handle exceptions here

@@ -1,7 +1,10 @@
+import 'dart:ffi';
+
 import 'package:card_swiper/card_swiper.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutteraya/model/my_cache.dart';
 import 'package:flutteraya/view/screens/home_screens/home.dart';
 import 'package:flutteraya/view/screens/home_screens/home_search_screen.dart';
 import 'package:flutteraya/view/screens/home_screens/saved_screen.dart';
@@ -17,8 +20,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _curIndex = 0;
-  List _screens=[Home(),AppliedJobs(),SavedScreen(),ProfileScreen()];
+  List _screens = [Home(), AppliedJobs(), SavedScreen(), ProfileScreen()];
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +28,10 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _curIndex,
+          currentIndex: MyCache.getString(key: "navigator")==" "?0:int.parse(MyCache.getString(key: "navigator")),
           onTap: (i) {
             setState(() {
-              _curIndex = i;
-              print(_curIndex);
+              MyCache.setString(key: "navigator", value: i.toString());
             });
           },
           type: BottomNavigationBarType.fixed,
@@ -40,8 +41,6 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.house), label: "Home"),
             BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.message), label: "Messages"),
-            BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.briefcase), label: "Applied"),
             BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.bookmark), label: "Saved"),
@@ -49,7 +48,7 @@ class _MainScreenState extends State<MainScreen> {
                 icon: FaIcon(FontAwesomeIcons.user), label: "Profile"),
           ],
         ),
-        body: _screens[_curIndex],
+        body: _screens[ MyCache.getString(key: "navigator")==" "?0:int.parse(MyCache.getString(key: "navigator"))],
       ),
     );
   }

@@ -31,7 +31,7 @@ class _InterestsState extends State<Interests> {
     "Research and Analytics",
   ];
 
-  List<bool> _interestBool = [false, false, false, false, false, false];
+  List<bool> _interestBool =List.generate(6, (index) => false);
 
   Color _boxColor = Color(0xffFAFAFA);
   Color _boxColor2 = Color(0xffD6E4FF);

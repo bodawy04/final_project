@@ -23,7 +23,7 @@ class MyCache{
   static void removeFromCache ({required String key}){
     preferences!.remove(key);
   }
-  static void clearCache ({required String key}){
+  static void clearCache (){
     preferences!.clear();
   }
 }

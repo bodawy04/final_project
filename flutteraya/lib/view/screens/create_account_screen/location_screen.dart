@@ -207,56 +207,6 @@ class _LocationsState extends State<Locations> {
                                   },
                                 ),
                               ))
-                      // Expanded(
-                      //   child: InkWell(
-                      //     child: Container(
-                      //       alignment: Alignment.center,
-                      //       child: Text(
-                      //         "Active",
-                      //         style: TextStyle(
-                      //             fontSize: 14.sp,
-                      //             fontWeight: FontWeight.w500,
-                      //             color: _tabTextIndexSelected == 0
-                      //                 ? Colors.white
-                      //                 : Color(0xff6B7280)),
-                      //       ),
-                      //       decoration: BoxDecoration(
-                      //         borderRadius: BorderRadius.circular(50),
-                      //         color: _tabTextIndexSelected == 0
-                      //             ? Color(0xff091A7A)
-                      //             : Color(0xffF4F4F5),
-                      //       ),
-                      //       height: 50.h,
-                      //     ),
-                      //     onTap: () {
-                      //       setState(() => _tabTextIndexSelected = 0);
-                      //     },
-                      //   ),
-                      // ),
-                      // Expanded(
-                      //   child: InkWell(
-                      //     child: Container(
-                      //       alignment: Alignment.center,
-                      //       child: Text(
-                      //         "Rejected",
-                      //         style: TextStyle(
-                      //             color: _tabTextIndexSelected == 1
-                      //                 ? Colors.white
-                      //                 : Color(0xff6B7280)),
-                      //       ),
-                      //       decoration: BoxDecoration(
-                      //         borderRadius: BorderRadius.circular(50),
-                      //         color: _tabTextIndexSelected == 1
-                      //             ? Color(0xff091A7A)
-                      //             : Color(0xffF4F4F5),
-                      //       ),
-                      //       height: 50.h,
-                      //     ),
-                      //     onTap: () {
-                      //       setState(() => _tabTextIndexSelected = 1);
-                      //     },
-                      //   ),
-                      // )
                       ),
                 ),
                 SizedBox(

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,14 +8,58 @@ import 'package:flutteraya/view/screens/applied_job_screens/applied_upload_portf
 import 'package:flutteraya/view/screens/home_screens/applied_jobs.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../model/job_model.dart';
+import '../../../model/my_cache.dart';
+import '../home_screens/main_page.dart';
+
 class AppliedJobMain extends StatefulWidget {
-  const AppliedJobMain({Key? key}) : super(key: key);
+  late JobModel jobModel;
+
+  AppliedJobMain({required this.jobModel}) {
+    jobModel = jobModel;
+    MyCache.setString(key: "jobID", value: jobModel.id!.toString());
+    MyCache.setString(key: "jobType", value: jobModel.jobType!);
+    MyCache.setString(key: "jobName", value: jobModel.name!);
+    MyCache.setString(key: "jobImage", value: jobModel.image!);
+  }
 
   @override
   _AppliedJobMainState createState() => _AppliedJobMainState();
 }
 
 class _AppliedJobMainState extends State<AppliedJobMain> {
+  saveData() async {
+    Dio dio = Dio();
+    try {
+      Response resp = await dio.post(
+        "https://project2.amit-learning.com/api/apply",
+        options: Options(headers: {
+          "Authorization": "Bearer ${MyCache.getString(key: "token")}"
+        }),
+        data: {
+          "cv_file": "${MyCache.getString(key: "cv_filename")}",
+          "name": "${MyCache.getString(key: "name")}",
+          "email": "${MyCache.getString(key: "email")}",
+          "mobile": "${MyCache.getString(key: "mobile")}",
+          "work_type": "${MyCache.getString(key: "chosen_jobType")}",
+          "job_id": "${MyCache.getString(key: "jobID")}",
+          "user_id": "${MyCache.getString(key: "userID")}",
+        },
+      );
+
+      if (resp.statusCode == 200) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => MainScreen()));
+      } else {}
+    } on DioException catch (e) {
+      // Handle exceptions here
+      // print("An error occurred: ${e.response!.data}");
+      print("An error occurred: ${e.response!.data!.toString()}");
+    }
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => MainScreen()));
+  }
+
   int activeStep = 0;
   List<String> _stepperTitle = [
     'Biodata',
@@ -53,8 +98,7 @@ class _AppliedJobMainState extends State<AppliedJobMain> {
             onPressed: () {
               setState(() {
                 activeStep == 2
-                    ? Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => AppliedJobs()))
+                    ? saveData()
                     : activeStep++;
               });
             },
@@ -72,16 +116,18 @@ class _AppliedJobMainState extends State<AppliedJobMain> {
             Center(
               child: Column(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    radius: 24.sp,
-                    child: FaIcon(FontAwesomeIcons.discord),
+                  SizedBox(
+                    height: 100.h,
+                    width: 100.w,
+                    child: ClipRRect(child: Image.network(
+                        widget.jobModel.image!),
+                      borderRadius: BorderRadius.circular(8),),
                   ),
                   SizedBox(
                     height: 10.h,
                   ),
                   Text(
-                    "UI/UX Designer",
+                    widget.jobModel.name!,
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 18.sp,
@@ -91,8 +137,11 @@ class _AppliedJobMainState extends State<AppliedJobMain> {
                     height: 10.h,
                   ),
                   Text(
-                    "Discord • Jakarta, Indonesia ",
-                    style: TextStyle(
+                      "${widget.jobModel
+                          .compName!} • ${widget.jobModel.location!.substring(0,
+                          widget.jobModel.location!
+                              .indexOf(','))}",
+              style: TextStyle(
                         color: Colors.grey,
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500),
@@ -127,7 +176,7 @@ class _AppliedJobMainState extends State<AppliedJobMain> {
                             : index == 1
                                 ? Icon(FontAwesomeIcons.two)
                                 : Icon(FontAwesomeIcons.three),
-                        title: "Data",
+                        title: _stepperTitle[index],
                       )),
               onStepReached: (index) => setState(() => activeStep = index),
             ),

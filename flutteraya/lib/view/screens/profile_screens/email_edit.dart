@@ -1,14 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class EmailEdit extends StatefulWidget {
-  const EmailEdit({Key? key}) : super(key: key);
+import '../../../model/my_cache.dart';
 
-  @override
-  _EmailEditState createState() => _EmailEditState();
-}
+class EmailEdit extends StatelessWidget {
+  var email = TextEditingController(text: MyCache.getString(key: "email"));
 
-class _EmailEditState extends State<EmailEdit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,21 +20,59 @@ class _EmailEditState extends State<EmailEdit> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
+      floatingActionButton: SizedBox(
+          width: MediaQuery.of(context).size.width - 40.w,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50)),
+                padding: EdgeInsets.symmetric(vertical: 12.h)),
+            onPressed: () async {
+              Dio dio = Dio();
+              try {
+                dynamic resp = await dio.post(
+                  "https://project2.amit-learning.com/api/auth/user/update",
+                  options: Options(headers: {
+                    "Authorization": "Bearer ${MyCache.getString(key: "token")}"
+                  }),
+                  data: {"email": email.text},
+                );
+                if (resp.statusCode == 200) {
+                  Navigator.of(context).pop();
+                  MyCache.setString(key: "email", value: email.text);
+                } else {
+                  print("Error: ${resp.data}");
+                }
+              } catch (e) {
+                // Handle exceptions here
+                print("An error occurred: $e");
+              }
+            },
+            child: Text("Save"),
+          )),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: ListView(
         shrinkWrap: true,
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         physics: BouncingScrollPhysics(),
         children: [
-          SizedBox(height: 20.h,),
+          SizedBox(
+            height: 20.h,
+          ),
           Text(
             "Main e-mail address",
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
           ),
-          SizedBox(height: 10.h,),
+          SizedBox(
+            height: 10.h,
+          ),
           TextField(
+            controller: email,
             decoration: InputDecoration(
-              hintText: "rafifdian12@gmail.com",
-              hintStyle: TextStyle(color: Colors.black,fontSize: 12.sp,fontWeight: FontWeight.w500),
+              hintStyle: TextStyle(
+                  color: Colors.black,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500),
               prefixIcon: Icon(
                 Icons.mail,
                 color: Color(0xff9CA3AF),
@@ -49,7 +85,6 @@ class _EmailEditState extends State<EmailEdit> {
                   borderRadius: BorderRadius.circular(10)),
             ),
           ),
-
         ],
       ),
     );
